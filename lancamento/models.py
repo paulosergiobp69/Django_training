@@ -13,8 +13,3 @@ class Lancamento(models.Model):
     valor = models.FloatField()
     data = models.DateTimeField(auto_now_add=True, null=True)
     tipolancamento = models.ForeignKey(TipoLancamento, on_delete=models.PROTECT, related_name='tipolancamento_fk', null=True)
-
-
-
-
-  
