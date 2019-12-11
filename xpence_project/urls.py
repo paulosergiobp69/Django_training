@@ -15,11 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
 import lancamento
 from . import views
+from rest_framework.routers import DefaultRouter
+from lancamento import views as lancamento
+
+
+router = DefaultRouter()
+#
+router.register(r'tipolancamentoviewapi', lancamento.TipoLancamentoAPI)
+router.register(r'lancamentoviewapi', lancamento.LancamentoAPI)
 
 urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
     path('admin/', admin.site.urls),
-    path('lancamento/', include('lancamento.urls'))
+    path('lancamento/', include('lancamento.urls')),
+    url(r'^', include(router.urls)),
 ]

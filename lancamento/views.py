@@ -1,11 +1,30 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django import views
+from django.http import JsonResponse
+from .serializers import TipoLancamentoSerializer, LancamentoSerializer
+from rest_framework import generics, viewsets
 
 # Create your views here.
 from django.shortcuts import render
 #from django.http import HttpResponse
 from lancamento.external_apis import TestRequest
-from lancamento.models import TipoLancamento
+from lancamento.models import TipoLancamento, Lancamento
+
+def tipo_lancamento_list(request):
+    MAX_OBJECTS = 20
+    tipos_lancamento = TipoLancamento.objects.all()[:MAX_OBJECTS]
+    data = {"results": list(tipos_lancamento.values("id", "descricao"))}
+
+    return JsonResponse(data)
+
+def tipo_lancamento_detail(request, pk):
+    tipo_lancamento = get_object_or_404(TipoLancamento, pk=pk)
+    data = {"results": {
+        "id": tipo_lancamento.id,
+        "descricao": tipo_lancamento.descricao
+    }}
+
+    return JsonResponse(data)
 
 class IndexView(views.View):
 
@@ -31,3 +50,11 @@ class TipoLancamentoView(views.View):
         TipoLancamento.objects.create(descricao=descricao)
 
         return self.get(request)
+
+class TipoLancamentoAPI(viewsets.ModelViewSet):
+    queryset = TipoLancamento.objects.all().order_by('id')
+    serializer_class = TipoLancamentoSerializer
+
+class LancamentoAPI(viewsets.ModelViewSet):
+    queryset = Lancamento.objects.all().order_by('-id')
+    serializer_class = LancamentoSerializer
